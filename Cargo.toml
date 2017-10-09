@@ -1,0 +1,8 @@
+[package]
+name = "quad_videos"
+version = "0.1.0"
+authors = ["Keith Raymond <raymondke99@gmail.com>"]
+
+[dependencies]
+termion = "1"
+chrono  = "0.4"
