@@ -6,3 +6,4 @@ authors = ["Keith Raymond <raymondke99@gmail.com>"]
 [dependencies]
 termion = "1"
 chrono  = "0.4"
+regex   = "0.2"
