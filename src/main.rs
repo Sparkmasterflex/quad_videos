@@ -3,7 +3,6 @@ extern crate chrono;
 extern crate regex;
 
 use std::io;
-use std::env;
 use std::fs;
 use termion::color;
 use chrono::prelude::*;
@@ -26,17 +25,17 @@ fn main() {
 
   let mut quad_name         = String::new();
 
-  let current_directory = env::current_dir().unwrap().display().to_string();
+  let default_directory = String::from("/Users/keithraymond/Desktop");
   let mut new_directory = String::new();
 
   let today           = Local::now();
   let mut flight_date = String::new();
 
-  let avi_regex  = Regex::new(r".AVI$").unwrap();
+  let mov_regex  = Regex::new(r".MOV$").unwrap();
 
   println!("\r");
   println!("{green}Which quad?{reset}",
-    green  = color::Fg(color::Green),
+    green = color::Fg(color::Green),
     reset = color::Fg(color::Reset)
   );
 
@@ -49,7 +48,7 @@ fn main() {
     green    = color::Fg(color::Green),
     magenta  = color::Fg(color::Magenta),
     reset    = color::Fg(color::Reset),
-    dir      = current_directory
+    dir      = default_directory
   );
 
   io::stdin().read_line(&mut new_directory)
@@ -57,7 +56,7 @@ fn main() {
 
 
   let dir = if new_directory == "\n" {
-    current_directory
+    default_directory
   } else {
     new_directory.trim().to_string()
   };
@@ -73,9 +72,12 @@ fn main() {
   io::stdin().read_line(&mut flight_date)
     .expect("Failed to read line");
 
-  let date_of_flight: DateTime<Local> = match Local::datetime_from_str(&Local, &flight_date, "%m/%d/%Y") {
+  let date_of_flight: DateTime<Local> = match Local::datetime_from_str(&Local, &flight_date.trim(), "%m/%d/%Y") {
     Ok(dt) => dt,
-    Err(_) => today
+    Err(e) => {
+      println!("{:?}", e);
+      today
+    }
   };
 
   let paths = fs::read_dir(&dir).unwrap();
@@ -85,14 +87,14 @@ fn main() {
     let p       = path.unwrap().path();
     let display = p.display().to_string();
 
-    if p.is_file() && avi_regex.is_match(&display) {
+    if p.is_file() && mov_regex.is_match(&display) {
       let content_type = match p.extension() {
         None => "",
         Some(os_str) => {
-          if os_str == "avi" {
-            "avi"
-          } else if os_str == "AVI" {
-            "AVI"
+          if os_str == "mov" {
+            "mov"
+          } else if os_str == "MOV" {
+            "MOV"
           } else {
             "suckit"
           }
